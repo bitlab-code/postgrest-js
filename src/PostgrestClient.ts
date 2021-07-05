@@ -54,7 +54,7 @@ export default class PostgrestClient<S extends SchemaBase = SchemaBase> {
    * @param params  The parameters to pass to the function call.
    * @param count  Count algorithm to use to count rows in a table.
    */
-  rpc<T = any>(
+  rpc<T extends TableBase>(
     fn: string,
     params?: object,
     {

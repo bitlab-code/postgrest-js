@@ -4,10 +4,6 @@ import { TableBase } from './types'
 /**
  * Filters
  */
-
-const cleanFilterArray = <T extends TableBase>(filter: T[keyof T][]) =>
-  filter.map((s) => `"${s}"`).join(',')
-
 type FilterOperator =
   | 'eq'
   | 'neq'
