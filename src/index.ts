@@ -7,6 +7,8 @@ import {
   PostgrestSingleResponse,
   PostgrestMaybeSingleResponse,
   PostgrestError,
+  SchemaBase,
+  TableBase,
 } from './lib/types'
 
 export {
@@ -18,4 +20,6 @@ export {
   PostgrestSingleResponse,
   PostgrestMaybeSingleResponse,
   PostgrestError,
+  SchemaBase,
+  TableBase,
 }

@@ -1,10 +1,10 @@
-import { PostgrestBuilder } from './types'
+import { PostgrestBuilder, TableBase } from './types'
 import PostgrestFilterBuilder from './PostgrestFilterBuilder'
 
-export default class PostgrestQueryBuilder<T> extends PostgrestBuilder<T> {
+export default class PostgrestQueryBuilder<T extends TableBase> extends PostgrestBuilder<T> {
   constructor(
     url: string,
-    { headers = {}, schema }: { headers?: { [key: string]: string }; schema?: string } = {}
+    { headers = {}, schema }: { headers?: Record<string, string>; schema?: string } = {}
   ) {
     super({} as PostgrestBuilder<T>)
     this.url = new URL(url)
@@ -20,7 +20,7 @@ export default class PostgrestQueryBuilder<T> extends PostgrestBuilder<T> {
    * @param count  Count algorithm to use to count rows in a table.
    */
   select(
-    columns = '*',
+    columns: '*' | string | keyof T | Array<keyof T> = '*',
     {
       head = false,
       count = null,
@@ -30,9 +30,14 @@ export default class PostgrestQueryBuilder<T> extends PostgrestBuilder<T> {
     } = {}
   ): PostgrestFilterBuilder<T> {
     this.method = 'GET'
+
+    if (Array.isArray(columns)) {
+      columns = columns.join(',')
+    }
+
     // Remove whitespaces except when quoted
     let quoted = false
-    const cleanedColumns = columns
+    const cleanedColumns = (columns as string)
       .split('')
       .map((c) => {
         if (/\s/.test(c) && !quoted) {
@@ -45,12 +50,15 @@ export default class PostgrestQueryBuilder<T> extends PostgrestBuilder<T> {
       })
       .join('')
     this.url.searchParams.set('select', cleanedColumns)
+
     if (count) {
       this.headers['Prefer'] = `count=${count}`
     }
+
     if (head) {
       this.method = 'HEAD'
     }
+
     return new PostgrestFilterBuilder(this)
   }
 

@@ -1,8 +1,12 @@
 import PostgrestTransformBuilder from './PostgrestTransformBuilder'
+import { TableBase } from './types'
 
 /**
  * Filters
  */
+
+const cleanFilterArray = <T extends TableBase>(filter: T[keyof T][]) =>
+  filter.map((s) => `"${s}"`).join(',')
 
 type FilterOperator =
   | 'eq'
@@ -28,7 +32,9 @@ type FilterOperator =
   | 'phfts'
   | 'wfts'
 
-export default class PostgrestFilterBuilder<T> extends PostgrestTransformBuilder<T> {
+export default class PostgrestFilterBuilder<
+  T extends TableBase
+> extends PostgrestTransformBuilder<T> {
   /**
    * Finds all rows which doesn't satisfy the filter.
    *

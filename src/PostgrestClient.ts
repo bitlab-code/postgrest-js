@@ -1,8 +1,9 @@
 import PostgrestQueryBuilder from './lib/PostgrestQueryBuilder'
 import PostgrestRpcBuilder from './lib/PostgrestRpcBuilder'
 import PostgrestFilterBuilder from './lib/PostgrestFilterBuilder'
+import { SchemaBase, TableBase } from './lib/types'
 
-export default class PostgrestClient {
+export default class PostgrestClient<S extends SchemaBase = SchemaBase> {
   url: string
   headers: { [key: string]: string }
   schema?: string
@@ -38,9 +39,12 @@ export default class PostgrestClient {
    *
    * @param table  The table name to operate on.
    */
-  from<T = any>(table: string): PostgrestQueryBuilder<T> {
+  from<K extends keyof S>(table: K): PostgrestQueryBuilder<S[K]> {
     const url = `${this.url}/${table}`
-    return new PostgrestQueryBuilder<T>(url, { headers: this.headers, schema: this.schema })
+    return new PostgrestQueryBuilder<S[K]>(url, {
+      headers: this.headers,
+      schema: this.schema,
+    })
   }
 
   /**

@@ -1,5 +1,9 @@
 import fetch from 'cross-fetch'
 
+export type TableBase = Record<string, any>
+
+export type SchemaBase = Record<string, TableBase>
+
 /**
  * Error format
  *
@@ -28,6 +32,7 @@ interface PostgrestResponseSuccess<T> extends PostgrestResponseBase {
   body: T[]
   count: number | null
 }
+
 interface PostgrestResponseFailure extends PostgrestResponseBase {
   error: PostgrestError
   data: null
@@ -35,6 +40,7 @@ interface PostgrestResponseFailure extends PostgrestResponseBase {
   body: null
   count: null
 }
+
 export type PostgrestResponse<T> = PostgrestResponseSuccess<T> | PostgrestResponseFailure
 
 interface PostgrestSingleResponseSuccess<T> extends PostgrestResponseBase {
@@ -43,12 +49,15 @@ interface PostgrestSingleResponseSuccess<T> extends PostgrestResponseBase {
   // For backward compatibility: body === data
   body: T
 }
+
 export type PostgrestSingleResponse<T> =
   | PostgrestSingleResponseSuccess<T>
   | PostgrestResponseFailure
 export type PostgrestMaybeSingleResponse<T> = PostgrestSingleResponse<T | null>
 
-export abstract class PostgrestBuilder<T> implements PromiseLike<PostgrestResponse<T>> {
+export abstract class PostgrestBuilder<T extends TableBase>
+  implements PromiseLike<PostgrestResponse<T>>
+{
   protected method!: 'GET' | 'HEAD' | 'POST' | 'PATCH' | 'DELETE'
   protected url!: URL
   protected headers!: { [key: string]: string }
